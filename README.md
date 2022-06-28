@@ -8,7 +8,7 @@
        <a href= "https://pytorch.org/">
         <img src="https://img.shields.io/badge/PyTorch-1.11-FF0000.svg" /></a>
 	   <a href= "hhttps://www.lightly.ai/">
-        <img src="https://github.com/lightly-ai/lightly/blob/master/docs/logos/lightly_logo_crop.png" /></a>
+        <img src="https://github.com/lightly-ai/lightly/blob/master/docs/logos/lightly_logo_crop.png" height='100' width='100' /></a>
 		
 </p>
 
