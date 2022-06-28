@@ -60,52 +60,52 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', default=100, type=int, help='Total number of epochs')
     parser.add_argument('--batch_size', default=4096, type=int, help='Batch Size')
 
-args = parser.parse_args()
+    args = parser.parse_args()
 
-resnet = torchvision.models.resnet18()
-backbone = nn.Sequential(*list(resnet.children())[:-1])
-model = TiCo(backbone, final_dim=args.final_dim)
+    resnet = torchvision.models.resnet18()
+    backbone = nn.Sequential(*list(resnet.children())[:-1])
+    model = TiCo(backbone, final_dim=args.final_dim)
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
-model.to(device)
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    model.to(device)
 
-cifar10 = torchvision.datasets.CIFAR10("datasets/cifar10", download=True)
-dataset = LightlyDataset.from_torch_dataset(cifar10)
-# or create a dataset from a folder containing images or videos:
-# dataset = LightlyDataset("path/to/folder")
+    cifar10 = torchvision.datasets.CIFAR10("datasets/cifar10", download=True)
+    dataset = LightlyDataset.from_torch_dataset(cifar10)
+    # or create a dataset from a folder containing images or videos:
+    # dataset = LightlyDataset("path/to/folder")
 
-collate_fn = ImageCollateFunction(input_size=32)
+    collate_fn = ImageCollateFunction(input_size=32)
 
-dataloader = torch.utils.data.DataLoader(
-    dataset,
-    batch_size=args.batch_size,
-    collate_fn=collate_fn,
-    shuffle=True,
-    drop_last=True,
-    num_workers=8,
-)
+    dataloader = torch.utils.data.DataLoader(
+        dataset,
+        batch_size=args.batch_size,
+        collate_fn=collate_fn,
+        shuffle=True,
+        drop_last=True,
+        num_workers=8,
+    )
 
-optimizer = torch.optim.SGD(model.parameters(), lr=args.LR)
-criterion = TiCo_Loss(beta = args.beta, rho = args.rho)
+    optimizer = torch.optim.SGD(model.parameters(), lr=args.LR)
+    criterion = TiCo_Loss(beta = args.beta, rho = args.rho)
 
-C_prev = Variable(torch.zeros(args.final_dim, args.final_dim), requires_grad=True).to(device)
-C_prev = C_prev.detach()
+    C_prev = Variable(torch.zeros(args.final_dim, args.final_dim), requires_grad=True).to(device)
+    C_prev = C_prev.detach()
 
-print("Starting Training")
-for epoch in range(args.epochs):
-    total_loss = 0
-    for (x_query, x_key), _, _ in dataloader:
-        update_momentum(model.backbone, model.backbone_momentum, m=0.99)
-        update_momentum(model.projection_head, model.projection_head_momentum, m=0.99)
-        x_query = x_query.to(device)
-        x_key = x_key.to(device)
-        query = model(x_query)
-        key = model.forward_momentum(x_key)
-        loss, C = criterion(C_prev, query, key)
-        C_prev = C.detach()
-        total_loss += loss.detach()
-        loss.backward()
-        optimizer.step()
-        optimizer.zero_grad()
-    avg_loss = total_loss / len(dataloader)
-    print(f"epoch: {epoch:>02}, loss: {avg_loss:.5f}")
+    print("Starting Training")
+    for epoch in range(args.epochs):
+        total_loss = 0
+        for (x_query, x_key), _, _ in dataloader:
+            update_momentum(model.backbone, model.backbone_momentum, m=0.99)
+            update_momentum(model.projection_head, model.projection_head_momentum, m=0.99)
+            x_query = x_query.to(device)
+            x_key = x_key.to(device)
+            query = model(x_query)
+            key = model.forward_momentum(x_key)
+            loss, C = criterion(C_prev, query, key)
+            C_prev = C.detach()
+            total_loss += loss.detach()
+            loss.backward()
+            optimizer.step()
+            optimizer.zero_grad()
+        avg_loss = total_loss / len(dataloader)
+        print(f"epoch: {epoch:>02}, loss: {avg_loss:.5f}")
