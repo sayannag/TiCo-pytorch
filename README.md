@@ -21,7 +21,7 @@ Table of contents
 
 <!--ts-->
   * [➤ Installation](#installation)
-  * [➤ Citations](#citations)
+  * [➤ Reference](#reference)
 <!--te-->
 
 Installation
@@ -30,7 +30,7 @@ Installation
 $ pip install -r requirements.txt
 ```
 
-Citations
+Reference
 ===
 
 ```bibtex
