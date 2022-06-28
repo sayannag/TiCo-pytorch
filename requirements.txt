@@ -1,1 +1,2 @@
-pip install lightly
+lightly
+torch==1.11.0+cu113
