@@ -1,5 +1,5 @@
 <h1 align="center">
-  <b>TiCo-PyTorch</b><br>
+  <b>TiCo-pyTorch</b><br>
 </h1>
 
 <p align="center">
